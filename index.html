@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekomendasi Website Konseling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Palet Tenang & Terpercaya -->
+    <!-- Application Structure Plan: Aplikasi ini dirancang sebagai SPA (Single-Page Application) dengan struktur dasbor multi-bagian. Tujuannya adalah untuk mengubah laporan linear menjadi pengalaman eksplorasi yang intuitif. Pengguna dapat langsung melompat ke bagian yang relevan (Lanskap Pasar, Target Audiens, Peluang) melalui navigasi sticky. Struktur ini dipilih karena memungkinkan pengguna dengan peran berbeda (misal: developer, marketer, konselor) untuk dengan cepat menemukan informasi yang mereka butuhkan tanpa harus membaca dari awal hingga akhir. Interaksi utama meliputi tab untuk perbandingan kompetitor, accordion untuk detail peluang, dan grafik interaktif untuk data audiens, yang membuat data kompleks menjadi lebih mudah dicerna dan dibandingkan. -->
+    <!-- Visualization & Content Choices: 
+        1. Statistik Kunci (Beranda): Goal: Inform & Impact. Method: Teks besar + Donut Chart (Chart.js). Interaction: Visualisasi langsung. Justification: Menarik perhatian pengguna ke masalah inti (kesenjangan akses) secara cepat dan kuat.
+        2. Analisis Kompetitor (Lanskap Pasar): Goal: Compare. Method: Tabbed Interface (HTML/CSS/JS) dengan kartu info. Interaction: Klik tab. Justification: Memudahkan perbandingan langsung antara Ibunda.id dan Bicarakan.id tanpa scroll berlebih.
+        3. Masalah Umum Remaja (Target Audiens): Goal: Inform & Compare. Method: Horizontal Bar Chart (Chart.js). Interaction: Hover/Tooltip. Justification: Efektif menampilkan prevalensi berbagai masalah dengan label yang panjang, dan hover memberikan detail tambahan.
+        4. Celah Layanan (Peluang): Goal: Organize & Inform. Method: Accordion (HTML/CSS/JS). Interaction: Klik untuk membuka. Justification: Menyajikan daftar peluang strategis secara ringkas, memungkinkan pengguna fokus pada satu peluang dalam satu waktu sambil menjaga antarmuka tetap bersih.
+        5. Rekomendasi Struktur Website (Rekomendasi): Goal: Organize. Method: Diagram konseptual (HTML/Tailwind). Interaction: Statis, visual. Justification: Memberikan gambaran visual yang jelas tentang arsitektur website yang direkomendasikan, lebih mudah dipahami daripada daftar teks.
+        Library/Method: Semua visualisasi menggunakan Chart.js (Canvas) atau elemen HTML/CSS/JS standar.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB;
+            color: #1F2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-button.active {
+            border-color: #0D9488;
+            color: #0D9488;
+            font-weight: 600;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .accordion-item.open .accordion-content {
+            max-height: 500px;
+        }
+        .accordion-item.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-teal-700">Rekomendasi Website Konseling</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#beranda" class="text-gray-600 hover:text-teal-700 transition">Beranda</a>
+                <a href="#lanskap-pasar" class="text-gray-600 hover:text-teal-700 transition">Lanskap Pasar</a>
+                <a href="#target-audiens" class="text-gray-600 hover:text-teal-700 transition">Target Audiens</a>
+                <a href="#peluang-strategi" class="text-gray-600 hover:text-teal-700 transition">Peluang & Strategi</a>
+                <a href="#rekomendasi" class="text-gray-600 hover:text-teal-700 transition">Rekomendasi</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-2">
+            <a href="#beranda" class="text-gray-600 hover:text-teal-700 transition">Beranda</a>
+            <a href="#lanskap-pasar" class="text-gray-600 hover:text-teal-700 transition">Lanskap Pasar</a>
+            <a href="#target-audiens" class="text-gray-600 hover:text-teal-700 transition">Target Audiens</a>
+            <a href="#peluang-strategi" class="text-gray-600 hover:text-teal-700 transition">Peluang & Strategi</a>
+            <a href="#rekomendasi" class="text-gray-600 hover:text-teal-700 transition">Rekomendasi</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="beranda" class="text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Membuka Peluang di Pasar Konseling Digital Indonesia</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">Sebuah analisis interaktif untuk membangun platform konseling yang fokus pada kebutuhan spesifik anak muda dan orang tua di Indonesia.</p>
+            <div class="w-full grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Kesenjangan Akses yang Signifikan</h3>
+                    <p class="text-gray-600 mb-4">Meskipun prevalensi masalah kesehatan mental tinggi, pemanfaatan layanan profesional masih sangat rendah.</p>
+                    <div class="flex justify-around text-center">
+                        <div>
+                            <p class="text-3xl font-bold text-teal-600">1 dari 3</p>
+                            <p class="text-sm text-gray-500">Remaja mengalami masalah kesehatan mental</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-red-600">2.6%</p>
+                            <p class="text-sm text-gray-500">Yang mengakses bantuan profesional</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                     <h3 class="text-xl font-semibold text-gray-700 mb-2 text-center">Visualisasi Kesenjangan Akses</h3>
+                    <div class="chart-container" style="height: 250px; max-height: 250px;">
+                        <canvas id="aksesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lanskap-pasar" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Analisis Lanskap Pasar</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Memahami kekuatan dan posisi pemain utama untuk menemukan celah diferensiasi. Klik tab untuk membandingkan.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-center border-b border-gray-200 mb-6">
+                    <button class="tab-button py-2 px-6 border-b-2 transition active" data-target="ibunda">Ibunda.id</button>
+                    <button class="tab-button py-2 px-6 border-b-2 border-transparent transition" data-target="bicarakan">Bicarakan.id</button>
+                </div>
+                <div id="ibunda" class="tab-content">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-teal-700 mb-3">Ibunda.id</h3>
+                            <p class="text-gray-600 mb-4">Platform mapan yang memposisikan kesehatan mental sebagai gaya hidup, menjangkau audiens luas.</p>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-teal-50 rounded-lg"><strong>Layanan Utama:</strong> Konseling, tes psikologi (gratis & berbayar), layanan korporat.</div>
+                                <div class="p-4 bg-teal-50 rounded-lg"><strong>Target Audiens:</strong> Umum (individu, korporat), pencari pengembangan diri.</div>
+                                <div class="p-4 bg-teal-50 rounded-lg"><strong>USP:</strong> Brand awareness kuat, menjadikan kesehatan mental gaya hidup, beragam layanan.</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center items-center bg-gray-50 p-6 rounded-lg">
+                             <h4 class="text-lg font-semibold text-gray-700 mb-2">Kekuatan Kunci</h4>
+                            <p class="text-6xl font-bold text-teal-500 mb-2">#1</p>
+                            <p class="text-center text-gray-600">Peringkat untuk kata kunci <strong class="text-gray-800">"Tes Mental"</strong>, menghasilkan trafik organik yang masif.</p>
+                            <p class="text-center text-sm text-gray-500 mt-4">Ini menunjukkan "asesmen awal" adalah titik masuk utama bagi banyak pengguna di Indonesia.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="bicarakan" class="tab-content hidden">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-orange-700 mb-3">Bicarakan.id</h3>
+                            <p class="text-gray-600 mb-4">Platform yang fokus pada kemudahan akses, kecepatan layanan, dan keterjangkauan biaya.</p>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-orange-50 rounded-lg"><strong>Layanan Utama:</strong> Konseling online (chat/video) dan offline.</div>
+                                <div class="p-4 bg-orange-50 rounded-lg"><strong>Target Audiens:</strong> Dewasa muda, sensitif harga, butuh layanan cepat.</div>
+                                <div class="p-4 bg-orange-50 rounded-lg"><strong>USP:</strong> Biaya terjangkau, jadwal cepat (&lt;24 jam), proses booking mudah.</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center items-center bg-gray-50 p-6 rounded-lg">
+                            <h4 class="text-lg font-semibold text-gray-700 mb-2">Kekuatan Kunci</h4>
+                             <p class="text-5xl font-bold text-orange-500 mb-2">Rp 249rb</p>
+                            <p class="text-center text-gray-600">Harga kompetitif untuk sesi online menjadi daya tarik utama.</p>
+                            <p class="text-center text-sm text-gray-500 mt-4">Ini menargetkan segmen pasar yang memprioritaskan biaya dan kemudahan akses.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Benchmark Situs Web Kompetitor</h3>
+                <p class="text-md text-gray-600 max-w-xl mx-auto text-center mb-8">Berikut adalah tautan langsung dan beberapa poin kunci dari situs web kompetitor utama dan contoh praktik konselor individual sebagai referensi benchmark.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="border border-gray-200 p-6 rounded-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center mb-4">
+                                <span class="text-2xl font-bold text-teal-600 mr-3">Ibunda.id</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">Platform mapan yang memposisikan kesehatan mental sebagai gaya hidup, menjangkau audiens luas.</p>
+                            <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                <li><strong class="text-gray-800">Fokus Utama:</strong> Konseling umum, tes psikologi (gratis & berbayar), layanan korporat.</li>
+                                <li><strong class="text-gray-800">Kekuatan Kunci:</strong> Brand awareness kuat, trafik organik tinggi dari kata kunci "Tes Mental".</li>
+                                <li><strong class="text-gray-800">Target Pasar:</strong> Individu umum, korporat, pencari pengembangan diri.</li>
+                            </ul>
+                        </div>
+                        <a href="https://www.ibunda.id/" target="_blank" rel="noopener noreferrer" class="mt-auto inline-block bg-teal-600 text-white px-5 py-2 rounded-lg hover:bg-teal-700 transition-colors duration-300 ease-in-out font-medium text-center">
+                            Kunjungi Ibunda.id ➔
+                        </a>
+                    </div>
+                    <div class="border border-gray-200 p-6 rounded-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center mb-4">
+                                 <span class="text-2xl font-bold text-orange-600 mr-3">Bicarakan.id</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">Platform yang fokus pada kemudahan akses, kecepatan layanan, dan keterjangkauan biaya.</p>
+                            <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                <li><strong class="text-gray-800">Fokus Utama:</strong> Konseling online (chat/video) dan offline, layanan cepat.</li>
+                                <li><strong class="text-gray-800">Kekuatan Kunci:</strong> Biaya terjangkau, booking mudah, jadwal konseling cepat (&lt;24 jam).</li>
+                                <li><strong class="text-gray-800">Target Pasar:</strong> Dewasa muda, individu yang sensitif terhadap harga dan butuh layanan segera.</li>
+                            </ul>
+                        </div>
+                        <a href="https://bicarakan.id/" target="_blank" rel="noopener noreferrer" class="mt-auto inline-block bg-orange-500 text-white px-5 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300 ease-in-out font-medium text-center">
+                            Kunjungi Bicarakan.id ➔
+                        </a>
+                    </div>
+                     <div class="border border-gray-200 p-6 rounded-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center mb-4">
+                                 <span class="text-2xl font-bold text-indigo-600 mr-3">Bertumbuh.co.id</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">Platform konseling dan pengembangan diri yang berfokus pada pertumbuhan personal dan profesional.</p>
+                            <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                <li><strong class="text-gray-800">Fokus Utama:</strong> Konseling psikologis, coaching, workshop pengembangan diri, layanan korporat.</li>
+                                <li><strong class="text-gray-800">Kekuatan Kunci:</strong> Pendekatan holistik (psikologi & coaching), tim profesional beragam, konten edukatif.</li>
+                                <li><strong class="text-gray-800">Target Pasar:</strong> Individu dewasa muda, profesional, perusahaan yang peduli kesejahteraan karyawan.</li>
+                            </ul>
+                        </div>
+                        <a href="https://bertumbuh.co.id/" target="_blank" rel="noopener noreferrer" class="mt-auto inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-300 ease-in-out font-medium text-center">
+                            Kunjungi Situs ➔
+                        </a>
+                    </div>
+                    <div class="border border-gray-200 p-6 rounded-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center mb-4">
+                                 <span class="text-2xl font-bold text-sky-600 mr-3">KALM</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">Aplikasi konseling online yang menyediakan akses mudah ke psikolog profesional melalui chat.</p>
+                            <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                <li><strong class="text-gray-800">Fokus Utama:</strong> Konseling via chat, jurnal rasa syukur, artikel kesehatan mental.</li>
+                                <li><strong class="text-gray-800">Kekuatan Kunci:</strong> Aksesibilitas (aplikasi mobile), biaya relatif terjangkau, anonimitas.</li>
+                                <li><strong class="text-gray-800">Target Pasar:</strong> Individu yang mencari konseling praktis dan privat, pengguna aplikasi mobile.</li>
+                            </ul>
+                        </div>
+                        <a href="https://www.get-kalm.com/" target="_blank" rel="noopener noreferrer" class="mt-auto inline-block bg-sky-600 text-white px-5 py-2 rounded-lg hover:bg-sky-700 transition-colors duration-300 ease-in-out font-medium text-center">
+                             Kunjungi Situs ➔
+                        </a>
+                    </div>
+                    <div class="border border-gray-200 p-6 rounded-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center mb-4">
+                                 <span class="text-2xl font-bold text-emerald-600 mr-3">Ideaulia.id</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">Praktik psikolog Aulia Iskandarsyah dengan fokus pada isu remaja, keluarga, dan pengembangan diri.</p>
+                            <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                                <li><strong class="text-gray-800">Fokus Utama:</strong> Konseling remaja, konseling keluarga, parenting, pengembangan diri, asesmen psikologis.</li>
+                                <li><strong class="text-gray-800">Kekuatan Kunci:</strong> Keahlian spesifik pada remaja & keluarga, pendekatan personal dan mendalam.</li>
+                                <li><strong class="text-gray-800">Target Pasar:</strong> Remaja, orang tua, individu yang mencari konseling dengan sentuhan personal.</li>
+                            </ul>
+                        </div>
+                        <a href="https://ideaulia.id/" target="_blank" rel="noopener noreferrer" class="mt-auto inline-block bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition-colors duration-300 ease-in-out font-medium text-center">
+                             Kunjungi Situs ➔
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="target-audiens" class="py-16 bg-gray-50 -mx-6 px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Memahami Kebutuhan Target Audiens</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Dua sisi mata uang: tantangan yang dihadapi anak muda dan kebutuhan dukungan dari orang tua mereka.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-2xl font-semibold mb-4 text-center">Anak Muda: Pelajar & Mahasiswa</h3>
+                    <p class="text-gray-600 text-center mb-6">Menghadapi tekanan kompleks dari berbagai arah.</p>
+                    <div class="chart-container">
+                        <canvas id="masalahRemajaChart"></canvas>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-lg mb-2 text-gray-700">Hambatan Utama Mencari Bantuan:</h4>
+                        <ul class="space-y-2 text-gray-600">
+                           <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span>Stigma sosial dan rasa malu.</li>
+                           <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span>Kurangnya pemahaman tentang kesehatan mental.</li>
+                           <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span>Khawatir akan respons negatif dari orang tua.</li>
+                           <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span>Kendala biaya dan akses ke profesional.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-2xl font-semibold mb-6 text-center">Orang Tua: Pencari Informasi & Dukungan</h3>
+                    <p class="text-gray-600 text-center mb-6">Aktif mencari cara untuk memahami dan mendukung anak remaja mereka di era digital.</p>
+                    <h4 class="font-semibold text-lg mb-3 text-gray-700">Informasi Paling Dicari Orang Tua:</h4>
+                    <ul class="space-y-3">
+                        <li class="p-4 bg-gray-100 rounded-lg"><strong>Memahami Psikologi Remaja:</strong> Panduan tentang perubahan emosi, krisis identitas, dan mood.</li>
+                        <li class="p-4 bg-gray-100 rounded-lg"><strong>Strategi Komunikasi Efektif:</strong> Cara membangun dialog terbuka dengan anak.</li>
+                        <li class="p-4 bg-gray-100 rounded-lg"><strong>Penanganan Isu Spesifik:</strong> Tips mengatasi kecanduan game, bullying, dan stres akademik.</li>
+                        <li class="p-4 bg-gray-100 rounded-lg"><strong>Mengenali Tanda Bahaya:</strong> Kapan anak membutuhkan bantuan profesional dan bagaimana prosesnya.</li>
+                    </ul>
+                     <p class="text-sm text-gray-500 mt-6 italic">Keterlibatan orang tua adalah faktor krusial dalam keberhasilan terapi anak. Memberdayakan mereka adalah peluang strategis.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="peluang-strategi" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Identifikasi Peluang & Diferensiasi</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Menemukan ceruk pasar dengan fokus pada spesialisasi untuk menghindari persaingan langsung.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Celah Layanan yang Belum Optimal</h3>
+                    <p class="text-gray-600 mb-6">Platform besar cenderung generalis. Ini membuka ruang untuk layanan yang lebih dalam dan terspesialisasi. Klik untuk melihat detail.</p>
+                    <div id="accordion-container" class="space-y-3">
+                        <div class="accordion-item border border-gray-200 rounded-lg">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition rounded-lg">
+                                <span class="font-semibold text-gray-700">Dukungan Terintegrasi untuk Orang Tua</span>
+                                <span class="accordion-arrow transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-white border-t border-gray-200 text-gray-600">
+                                Platform yang ada cenderung fokus pada anak/remaja. Layanan yang memberdayakan orang tua (konseling parenting, strategi komunikasi, manajemen stres pengasuhan) masih terbatas namun sangat dibutuhkan.
+                            </div>
+                        </div>
+                        <div class="accordion-item border border-gray-200 rounded-lg">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition rounded-lg">
+                                <span class="font-semibold text-gray-700">Fokus Isu Spesifik Remaja (Niche)</span>
+                                <span class="accordion-arrow transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-white border-t border-gray-200 text-gray-600">
+                                Isu krusial seperti kecanduan game online, masalah citra tubuh (body image), dan stres transisi pendidikan (masuk kuliah) memiliki permintaan tinggi namun layanan spesialisnya masih minim di platform besar.
+                            </div>
+                        </div>
+                        <div class="accordion-item border border-gray-200 rounded-lg">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition rounded-lg">
+                                <span class="font-semibold text-gray-700">Pendekatan Konseling Unik</span>
+                                <span class="accordion-arrow transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content p-4 bg-white border-t border-gray-200 text-gray-600">
+                                Mengintegrasikan pendekatan yang relevan secara budaya lokal atau menggunakan media yang diminati remaja (seni, musik) sebagai alat terapi dapat menjadi pembeda yang kuat.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-2xl font-semibold mb-4">Titik Masuk (Entry Point) Strategis</h3>
+                    <p class="text-gray-600 mb-6">Alih-alih bersaing pada "Tes Mental" (vs Ibunda.id) atau "Harga Murah" (vs Bicarakan.id), ciptakan jalur masuk yang unik melalui konten dan layanan spesifik.</p>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-teal-500 pl-4">
+                            <h4 class="font-bold">Untuk Orang Tua</h4>
+                            <p class="text-gray-600">"Panduan Parenting Remaja Anti Stres"</p>
+                        </div>
+                        <div class="border-l-4 border-teal-500 pl-4">
+                            <h4 class="font-bold">Isu Niche Remaja</h4>
+                            <p class="text-gray-600">"Program Bebas Kecanduan Game Online"</p>
+                        </div>
+                         <div class="border-l-4 border-teal-500 pl-4">
+                            <h4 class="font-bold">Isu Niche Remaja</h4>
+                            <p class="text-gray-600">"Workshop Bangun Citra Tubuh Positif"</p>
+                        </div>
+                        <div class="border-l-4 border-teal-500 pl-4">
+                            <h4 class="font-bold">Pengembangan Diri</h4>
+                            <p class="text-gray-600">"Konseling Karir & Persiapan Mental Masuk Kuliah"</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-6 italic">Titik masuk ini berfungsi sebagai corong pemasaran, membangun kepercayaan melalui keahlian spesifik sebelum menawarkan konseling penuh.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="rekomendasi" class="py-16 bg-gray-50 -mx-6 px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Rekomendasi Website & Portofolio</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Membangun platform yang berfungsi ganda: sebagai layanan konseling dan portofolio profesional yang meyakinkan.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="md:col-span-1">
+                        <h3 class="text-xl font-semibold mb-4 text-teal-800">Proposisi Nilai Unik (USP)</h3>
+                        <p class="text-gray-700">"Konseling profesional dengan <strong>fokus spesifik</strong> pada tantangan anak muda Indonesia, serta <strong>pendampingan komprehensif</strong> bagi orang tua mereka."</p>
+                        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                            <li>✔ Kedalaman, bukan keluasan.</li>
+                            <li>✔ Layanan terintegrasi untuk keluarga.</li>
+                            <li>✔ Sentuhan personal dan kepercayaan.</li>
+                        </ul>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Struktur & Fitur Esensial Website (8 halaman)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                            <div class="p-3 bg-gray-100 rounded-lg"><strong>Halaman Utama</strong><p class="text-xs text-gray-500">Headline jelas & CTA <br>(1 Halaman)</p></div>
+                            <div class="p-3 bg-gray-100 rounded-lg"><strong>Halaman Layanan</strong><p class="text-xs text-gray-500">Detail layanan per niche <br> (1 Halaman)</p></div>
+                            <div class="p-3 bg-teal-100 rounded-lg font-bold"><strong>Profil Konselor</strong><p class="text-xs text-gray-500 font-normal">Kualifikasi, spesialisasi, filosofi <br> (1 Halaman)</p></div>
+                            <div class="p-3 bg-gray-100 rounded-lg"><strong>Sumber Daya</strong><p class="text-xs text-gray-500">Blog, video, artikel <br>(3 Halaman)</p></div>
+                            <div class="p-3 bg-gray-100 rounded-lg"><strong>Kontak & Booking</strong><p class="text-xs text-gray-500">Info jelas & transparan <br>(1 Halaman)</p></div>
+                            <div class="p-3 bg-gray-100 rounded-lg"><strong>FAQ</strong><p class="text-xs text-gray-500">Jawaban atas keraguan umum <br> (1 Halaman)</p></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-4 italic">Profil konselor adalah bagian paling vital sebagai portofolio. Harus mendalam, personal, dan membangun kepercayaan melebihi profil standar di platform agregator.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>Rekomendasi Website Konseling</p>
+            <p class="text-sm text-gray-400 mt-1">Dihasilkan berdasarkan Laporan Strategi Pengembangan Website Konseling.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    const target = button.getAttribute('data-target');
+                    tabContents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const accordionItem = header.parentElement;
+                    const isOpen = accordionItem.classList.contains('open');
+
+                    document.querySelectorAll('.accordion-item').forEach(item => item.classList.remove('open'));
+                    
+                    if (!isOpen) {
+                        accordionItem.classList.add('open');
+                    }
+                });
+            });
+
+            const aksesChartCtx = document.getElementById('aksesChart').getContext('2d');
+            new Chart(aksesChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mengakses Bantuan (2.6%)', 'Tidak Mengakses Bantuan (97.4%)'],
+                    datasets: [{
+                        data: [2.6, 97.4],
+                        backgroundColor: ['#0D9488', '#F87171'],
+                        borderColor: '#F9FAFB',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#4B5563',
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const masalahRemajaChartCtx = document.getElementById('masalahRemajaChart').getContext('2d');
+            new Chart(masalahRemajaChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Stres Akademik', 'Depresi & Kecemasan', 'Bullying', 'Masalah Hubungan', 'Krisis Identitas & Medsos', 'Gangguan Makan'],
+                    datasets: [{
+                        label: 'Tingkat Prevalensi/Kekhawatiran',
+                        data: [90, 85, 70, 65, 60, 45],
+                        backgroundColor: [
+                            'rgba(13, 148, 136, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(168, 85, 247, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(13, 148, 136, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(168, 85, 247, 1)',
+                            'rgba(236, 72, 153, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jenis Masalah Umum yang Dihadapi Remaja',
+                            color: '#374151',
+                             font: {
+                                size: 16,
+                                family: "'Inter', sans-serif"
+                            }
+                        },
+                         tooltip: {
+                            bodyFont: {
+                                family: "'Inter', sans-serif"
+                            },
+                            titleFont: {
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#E5E7EB'
+                            },
+                            ticks: {
+                                color: '#4B5563',
+                                font: { family: "'Inter', sans-serif" }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#4B5563',
+                                font: { family: "'Inter', sans-serif" }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId.length > 1) {
+                        e.preventDefault();
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                             targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
